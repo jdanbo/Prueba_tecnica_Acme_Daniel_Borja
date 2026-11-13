@@ -127,4 +127,49 @@ export class ConsoleUI {
     this.#service.delete(id);
     console.log('\nEmpleado eliminado.');
   }
+
+  // ---------- ciclo principal ----------
+  async run() {
+    let cerrado = false;
+    this.#rl.on('close', () => { cerrado = true; });
+
+    const acciones = {
+      1: () => this.#register(),
+      2: () => this.#list(),
+      3: () => this.#search(),
+      4: () => this.#update(),
+      5: () => this.#remove(),
+    };
+
+    let salir = false;
+    while (!salir && !cerrado) {
+      this.#showMenu();
+      try {
+        const opcion = await this.#ask('Elige una opción: ');
+        if (opcion === '0') {
+          salir = true;
+        } else if (acciones[opcion]) {
+          await acciones[opcion]();
+        } else {
+          console.log('Opción no válida. Intenta de nuevo.');
+        }
+      } catch (error) {
+        if (cerrado) break;
+        this.#handleError(error);
+      }
+    }
+    console.log('\nHasta luego, Vuelva pronto!');
+    this.#rl.close();
+  }
+
+  // Errores esperados -> mensaje amable. Inesperados -> mensaje genérico.
+  // En ambos casos la aplicación NO se cierra.
+  #handleError(error) {
+    if (error instanceof ValidationError || error instanceof NotFoundError) {
+      console.log(`\n${error.message}`);
+    } else {
+      console.log('\nOcurrió un error inesperado. Intenta de nuevo porfavor.');
+      console.error(error);
+    }
+  }
 }
