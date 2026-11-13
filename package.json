@@ -1,0 +1,8 @@
+{
+  "name": "acme-empleados",
+  "version": "1.0.0",
+  "description": "Gestión de empleados por consola (Node.js, POO + SOLID)",
+  "type": "module",
+  "main": "index.js",
+  "scripts": { "start": "node index.js" }
+}
